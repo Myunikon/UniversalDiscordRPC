@@ -1,25 +1,20 @@
 # Universal Discord RPC (Stealth Mode)
 Sebuah generator Discord Rich Presence (RPC) yang ringan dan dapat dikustomisasi sepenuhnya. Aplikasi ini berjalan secara otomatis di latar belakang untuk berbagai software, termasuk FL Studio, Ableton Live, CapCut, dan lainnya.
 ## ✨ Fitur Utama
+- **Generic Fallback Mode**: Secara otomatis mendeteksi software apapun yang sedang Anda buka, meski tidak ada di daftar.
+- **Dynamic Icon Mapping**: Mendukung logo spesifik (seperti Brave/Chrome) menggunakan satu Master Application ID.
 - **Integrasi System Tray**: Berjalan di area notifikasi (dekat jam), memudahkan kontrol tanpa memenuhi taskbar.
-- **Mode Stealth**: Beroperasi secara senyap di latar belakang tanpa jendela aktif.
-- **Auto-Startup**: Opsi untuk berjalan otomatis saat Windows dinyalakan.
-- **Auto-Reload**: Pengaturan di `config.json` akan langsung diterapkan tanpa perlu merestart aplikasi.
-- **Pemindaian Cerdas**: Menggunakan resource CPU 0% saat idle dan RAM yang sangat rendah (~20MB).
-- **Deteksi Judul Pintar**: Mampu memindai hingga ke proses anak (child process) untuk mendeteksi nama projek yang sedang dikerjakan secara akurat.
+- **Exclusion List**: Cerdas mengabaikan proses sistem seperti Explorer agar status Discord tetap akurat.
+- **Auto-Startup & Auto-Reload**: Sangat praktis, sekali pasang langsung jalan selamanya.
 ## 🚀 Cara Instalasi
 ### Opsi 1: Download File Siap Pakai (Rekomendasi)
 1. Kunjungi halaman [Releases](https://github.com/makcrtve/UniversalDiscordRPC/releases).
-2. Unduh file `UDRPC_v1.2_Release.zip` versi terbaru.
-3. Ekstrak file ZIP tersebut ke folder pilihan Anda.
-4. Jalankan `UniversalDiscordRPC.exe`.
-### Opsi 2: Build Sendiri (Untuk Developer)
-1. Unduh atau clone repository ini.
-2. Pastikan Anda telah menginstal [Python](https://www.python.org/).
-3. Jalankan file `build.bat`. Script ini akan otomatis:
-   - Menginstal library yang diperlukan (`pystray`, `Pillow`, `pypresence`, `psutil`).
-   - Melakukan kompilasi menjadi file `.exe` tunggal di dalam folder `dist`.
-   - Membuat paket rilis ZIP secara otomatis.
+2. Unduh file `UDRPC_v1.3_Release.zip` versi terbaru.
+3. Ekstrak dan jalankan `UniversalDiscordRPC.exe`.
+### Opsi 2: Build Sendiri (Developer)
+1. Unduh source code dan jalankan `build.bat`. Script akan mengurus segalanya mulai dari instalasi library hingga pembuatan paket ZIP rilis.
+## 🤝 Berkontribusi & Request
+Jika ada software favorit Anda yang logo atau statusnya ingin dibuat lebih spesifik, silakan ajukan melalui [Software Request Template](https://github.com/makcrtve/UniversalDiscordRPC/issues/new/choose).
 ## ⚙️ Konfigurasi
 Anda dapat menambahkan software yang ingin dideteksi dengan mengedit file `config.json`. 
 Aplikasi ini mendukung variabel dinamis seperti:
@@ -37,5 +32,6 @@ Aplikasi ini mendukung variabel dinamis seperti:
 - `pystray`
 - `Pillow`
 - `pyinstaller` (untuk proses build)
+
 ---
 *Dibuat dengan ❤️ untuk para kreator oleh **makcrtve**.*
