@@ -130,9 +130,9 @@ pyinstaller  # untuk build
 Kontribusi sangat diterima! Berikut caranya:
 
 1. **Fork** repository ini
-2. Buat branch fitur (`git checkout -b feature/AmazingFeature`)
-3. Commit perubahan (`git commit -m 'Add AmazingFeature'`)
-4. Push ke branch (`git push origin feature/AmazingFeature`)
+2. Buat branch fitur (`git checkout -b feature/example`)
+3. Commit perubahan (`git commit -m 'Add example'`)
+4. Push ke branch (`git push origin feature/example`)
 5. Buat **Pull Request**
 
 ### Software Request
@@ -156,7 +156,7 @@ Ingin logo/status spesifik untuk software favorit? Ajukan melalui [Software Requ
 
 ## 📄 License
 
-Distributed under the MIT License. See `LICENSE` for more information.
+Distributed under the GNU General Public License v3.0. See [LICENSE](LICENSE) for more information.
 
 ---
 
@@ -167,3 +167,4 @@ _Dibuat dengan ❤️ untuk para kreator oleh **[makcrtve](https://github.com/ma
 ⭐ Star repository ini jika bermanfaat!
 
 </div>
+
