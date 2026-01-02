@@ -1,4 +1,6 @@
 pypresence
 psutil
 pyinstaller
+pystray
+Pillow
 

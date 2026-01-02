@@ -7,6 +7,9 @@ import ctypes
 import sys
 import subprocess
 from datetime import datetime
+import threading
+import pystray
+from PIL import Image
 
 # Win32 API setup for window title detection and singleton check
 user32 = ctypes.windll.user32
@@ -16,6 +19,12 @@ def get_base_path():
     if getattr(sys, 'frozen', False):
         return os.path.dirname(sys.executable)
     return os.path.dirname(os.path.abspath(__file__))
+
+def get_resource_path(relative_path):
+    """ Get absolute path to resource, works for dev and for PyInstaller """
+    if getattr(sys, 'frozen', False) and hasattr(sys, '_MEIPASS'):
+        return os.path.join(sys._MEIPASS, relative_path)
+    return os.path.join(get_base_path(), relative_path)
 
 def log_debug(message):
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -90,7 +99,18 @@ class UniversalRPC:
         self.active_rpc = None
         self.current_app_id = None
         self.start_time = None
+        self.running = True
         log_debug("RPC Service Initialized.")
+
+    def stop(self):
+        log_debug("Stopping RPC Service...")
+        self.running = False
+        if self.active_rpc:
+            try:
+                self.active_rpc.close()
+            except:
+                pass
+            self.active_rpc = None
 
     def load_config(self):
         # Try primary path first
@@ -154,7 +174,7 @@ class UniversalRPC:
 
     def run(self):
         log_debug("Universal Discord RPC is running in background...")
-        while True:
+        while self.running:
             try:
                 app, pid = self.find_target_process()
 
@@ -216,6 +236,42 @@ class UniversalRPC:
             interval = self.config.get('polling_interval', 15)
             time.sleep(interval if self.current_app_id else interval * 2)
 
+def on_quit(icon, item, rpc_obj):
+    log_debug("Exit selected from tray.")
+    rpc_obj.stop()
+    icon.stop()
+
+def setup_tray(rpc_obj):
+    try:
+        # Try to find icon in bundled resources first, then locally
+        icon_path = get_resource_path("icon.ico")
+        
+        if not os.path.exists(icon_path):
+            # Fallback to local path if not in bundle
+            icon_path = os.path.join(get_base_path(), "icon.ico")
+
+        log_debug(f"Loading tray icon from: {icon_path}")
+        if os.path.exists(icon_path):
+            image = Image.open(icon_path)
+        else:
+            log_debug("Icon not found, using fallback colored square.")
+            image = Image.new('RGB', (64, 64), color=(114, 137, 218))
+
+        menu = pystray.Menu(
+            pystray.MenuItem("Universal Discord RPC", lambda: None, enabled=False),
+            pystray.MenuItem("Exit", lambda icon, item: on_quit(icon, item, rpc_obj))
+        )
+
+        icon = pystray.Icon("UniversalDiscordRPC", image, "Universal Discord RPC", menu)
+        icon.run()
+    except Exception as e:
+        log_debug(f"Tray initialization error: {e}")
+        # If tray fails, we still want the RPC to run if possible, 
+        # but since this is the main thread, it might exit anyway.
+        # We'll just keep the main thread alive if we can.
+        while rpc_obj.running:
+            time.sleep(1)
+
 if __name__ == "__main__":
     if is_already_running():
         sys.exit(0)
@@ -226,4 +282,10 @@ if __name__ == "__main__":
 
     config_file = os.path.join(get_base_path(), 'config.json')
     rpc = UniversalRPC(config_file)
-    rpc.run()
+
+    # Run RPC logic in a separate thread
+    rpc_thread = threading.Thread(target=rpc.run, daemon=True)
+    rpc_thread.start()
+
+    # Run tray icon in the main thread (pystray needs to be in the main thread on some platforms)
+    setup_tray(rpc)

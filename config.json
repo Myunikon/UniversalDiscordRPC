@@ -7,7 +7,7 @@
       "client_id": "1115529334594220116",
       "large_image": "fl-studio-icon",
       "details_format": "Editing: {window_title}",
-      "state_format": "Cooking in FL Studio"
+      "state_format": "Cooking..."
     },
     {
       "name": "Ableton Live 11 Suite",
@@ -15,7 +15,7 @@
       "client_id": "1043409832117551194",
       "large_image": "live11logo",
       "details_format": "Producing: {window_title}",
-      "state_format": "Cooking in Ableton Live"
+      "state_format": "Cooking..."
     },
     {
       "name": "Ableton Live 12 Suite",
@@ -23,7 +23,15 @@
       "client_id": "1184793021217263617",
       "large_image": "live12logo",
       "details_format": "Producing: {window_title}",
-      "state_format": "Cooking in Ableton Live"
+      "state_format": "Cooking..."
+    },
+    {
+      "name": "CapCut",
+      "process_name": ["CapCut.exe"],
+      "client_id": "1456598592063279379",
+      "large_image": "capcutlogo",
+      "details_format": "Producing: {window_title}",
+      "state_format": "Cooking..."
     }
   ]
 }
