@@ -119,6 +119,12 @@ class UniversalRPC:
         self.current_app_id = None
         self.start_time = None
         self.running = True
+
+        # Sticky Presence logic
+        self.last_detected_app = None
+        self.last_detected_pids = None
+        self.lost_focus_at = 0
+
         log_debug("RPC Service Initialized.")
 
     def stop(self):
@@ -203,6 +209,39 @@ class UniversalRPC:
                     return target_app, all_pids
             except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
                 continue
+        # Second pass: Generic Fallback (if enabled)
+        master = self.config.get('master_config', {})
+        if master.get('enabled'):
+            try:
+                hwnd = user32.GetForegroundWindow()
+                if hwnd:
+                    pid = ctypes.c_ulong()
+                    user32.GetWindowThreadProcessId(hwnd, ctypes.byref(pid))
+                    if pid.value:
+                        proc = psutil.Process(pid.value)
+                        pname = proc.name()
+
+                        # Check exclusion list
+                        exclusions = [e.lower() for e in master.get('exclude_processes', [])]
+                        if pname.lower() not in exclusions:
+                            # Dynamic image selection: Check image_map first, then fallback to global large_image
+                            image_map = master.get('image_map', {})
+                            large_image = image_map.get(pname, image_map.get(pname.lower(), master.get('large_image')))
+
+                            # Create a virtual app entry
+                            virtual_app = {
+                                'name': pname.replace('.exe', '').capitalize(),
+                                'client_id': master.get('client_id'),
+                                'large_image': large_image,
+                                'details_format': master.get('details_format', 'Working on: {app_name}'),
+                                'state_format': master.get('state_format', '{window_title}'),
+                                'is_generic': True
+                            }
+                            return virtual_app, [pid.value]
+            except Exception as e:
+                # log_debug(f"Generic detection error: {e}")
+                pass
+
         return None, None
 
     def run(self):
@@ -210,6 +249,24 @@ class UniversalRPC:
         while self.running:
             try:
                 app, pids = self.find_target_process()
+
+                # Smart Sticky logic:
+                # If no NEW app is focused (e.g., focused on desktop/explorer),
+                # check if the LAST app is still actually running.
+                if not app:
+                    if self.active_rpc and self.last_detected_app and self.last_detected_pids:
+                        # Check if at least one of the previous PIDs still exists in the system
+                        still_alive = any(psutil.pid_exists(pid) for pid in self.last_detected_pids)
+                        if still_alive:
+                            app = self.last_detected_app
+                            pids = self.last_detected_pids
+                        else:
+                            self.last_detected_app = None
+                            self.last_detected_pids = None
+                else:
+                    # New app detected, update history
+                    self.last_detected_app = app
+                    self.last_detected_pids = pids
 
                 if app:
                     client_id = app['client_id']
@@ -312,7 +369,7 @@ def setup_tray(rpc_obj):
         icon.run()
     except Exception as e:
         log_debug(f"Tray initialization error: {e}")
-        # If tray fails, we still want the RPC to run if possible, 
+        # If tray fails, we still want the RPC to run if possible,
         # but since this is the main thread, it might exit anyway.
         # We'll just keep the main thread alive if we can.
         while rpc_obj.running:

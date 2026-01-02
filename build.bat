@@ -31,14 +31,14 @@ copy config.json dist\ >nul
 
 echo.
 echo [Bonus] Membuat paket Rilis (ZIP)...
-powershell -Command "Compress-Archive -Path 'dist\*' -DestinationPath 'UDRPC_v1.2_Release.zip' -Force"
+powershell -Command "Compress-Archive -Path 'dist\*' -DestinationPath 'UDRPC_v1.4_Release.zip' -Force"
 
 echo.
 echo ==========================================
 echo    BUILD BERHASIL!
 echo ==========================================
 echo Lokasi EXE:   \dist\UniversalDiscordRPC.exe
-echo Lokasi Rilis: \UDRPC_v1.2_Release.zip
+echo Lokasi Rilis: \UDRPC_v1.4_Release.zip
 echo.
 echo TIP: Jika icon tetap tidak muncul, coba rename file .exe-nya atau copy ke folder Desktop.
 echo.
