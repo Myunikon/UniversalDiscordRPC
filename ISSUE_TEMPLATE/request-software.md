@@ -1,5 +1,5 @@
 ---
-name: 'equest Software Baru'
+name: 'Request Software Baru'
 about: Ajukan software favorit Anda untuk ditambahkan ke daftar deteksi otomatis.
 title: '[REQUEST] Nama Software'
 labels: enhancement
@@ -22,4 +22,5 @@ assignees: ''
 - Baris 2: Editing something...
 
 **Catatan Lain:**
+
 (Tambahkan informasi tambahan jika perlu)
